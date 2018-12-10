@@ -468,10 +468,13 @@ open class SAPinViewController: UIViewController {
         updateTitle()
     }
     fileprivate func updateTitle() {
-        if currentPinViewType == .enter {
+        switch currentPinViewType {
+        case .enter:
             titleLabel.text = delegate?.enterPinViewTitle()
-        } else {
+        case .set:
             titleLabel.text = delegate?.setPinViewTitle()
+        case .confirm:
+            titleLabel.text = delegate?.repeatPinViewTitle()
         }
         titleLabel.snp.remakeConstraints { (make) in
             make.width.equalTo(dotContainerWidth)
