@@ -569,6 +569,9 @@ extension SAPinViewController: SAButtonViewDelegate {
                         titleText = "Set PIN"
                         tappedButtons = []
                         setAttributedTitleForButtonWithTitle(SAPinConstant.CancelString, font: cancelButtonFont, color: cancelButtonColor)
+                        for item in circleViews {
+                            item.backgroundColor = UIColor.white.withAlphaComponent(0)
+                        }
                     } else {
                         delegate.pinEntryWasSuccessful()
                     }
@@ -578,6 +581,9 @@ extension SAPinViewController: SAButtonViewDelegate {
                     titleText = "Repeat PIN"
                     tappedButtons = []
                     setAttributedTitleForButtonWithTitle(SAPinConstant.CancelString, font: cancelButtonFont, color: cancelButtonColor)
+                    for item in circleViews {
+                        item.backgroundColor = UIColor.white.withAlphaComponent(0)
+                    }
                 case .confirm:
                     let repeatedPin = "\(tappedButtons[0])\(tappedButtons[1])\(tappedButtons[2])\(tappedButtons[3])"
                     if newPin == repeatedPin {
