@@ -48,6 +48,8 @@ public protocol SAPinViewControllerDelegate: class {
     
     func repeatPasswordError() -> String
     
+    func hasPinCode() -> Bool
+    
 }
 
 public extension SAPinViewControllerDelegate {
@@ -63,6 +65,8 @@ public extension SAPinViewControllerDelegate {
     func repeatPinViewTitle() -> String { return "" }
     
     func repeatPasswordError() -> String { return "" }
+    
+    func hasPinCode() -> Bool { return true }
     
 }
 
@@ -256,7 +260,11 @@ open class SAPinViewController: UIViewController {
     public init(withDelegate: SAPinViewControllerDelegate, backgroundImage: UIImage? = nil, backgroundColor: UIColor? = nil, logoImage: UIImage? = nil) {
         
         super.init(nibName: nil, bundle: nil)
+        
         delegate = withDelegate
+        
+        currentPinViewType = withDelegate.hasPinCode() ? .enter : .set
+
         if let safeImage = backgroundImage {
             if let safeBGColor = backgroundColor {
                 self.view.backgroundColor = safeBGColor
@@ -582,12 +590,12 @@ extension SAPinViewController: SAButtonViewDelegate {
             circleViews[tappedButtons.count].animateTapFull()
             tappedButtons.append(tag)
             setAttributedTitleForButtonWithTitle(SAPinConstant.DeleteString, font: cancelButtonFont, color: cancelButtonColor)
-            
-            guard let delegate = delegate else {
-                return
-            }
-            
             if tappedButtons.count == 4 {
+                
+                guard let delegate = delegate else {
+                    return
+                }
+
                 switch currentPinViewType {
                 case .enter:
                    
