@@ -468,7 +468,7 @@ open class SAPinViewController: UIViewController {
         updateTitle()
     }
     fileprivate func updateTitle() {
-        titleLabel.text = titleText ?? "Enter PIN"
+        titleLabel.text = delegate?.enterPinViewTitle()
         titleLabel.snp.remakeConstraints { (make) in
             make.width.equalTo(dotContainerWidth)
             if subtitleLabel.text == "" {
