@@ -254,7 +254,7 @@ open class SAPinViewController: UIViewController {
             })
         }
         view.addSubview(blurView)
-        view.bringSubview(toFront: blurView)
+        view.bringSubviewToFront(blurView)
         blurView.snp.makeConstraints { (make) in
             make.edges.equalTo(self.view)
         }
@@ -469,7 +469,7 @@ open class SAPinViewController: UIViewController {
             make.height.equalTo(44)
         }
     }
-    func cancelDeleteTap() {
+    @objc func cancelDeleteTap() {
         if cancelButton.titleLabel?.text == SAPinConstant.DeleteString {
             if tappedButtons.count > 0 {
                 circleViews[tappedButtons.count-1].animateTapEmpty()
@@ -486,7 +486,7 @@ open class SAPinViewController: UIViewController {
         return UIScreen.main.bounds.height == 480
     }
     fileprivate func setAttributedTitleForButtonWithTitle(_ title: String, font: UIFont, color: UIColor) {
-        cancelButton.setAttributedTitle(NSAttributedString(string: title, attributes: [NSFontAttributeName:font,NSForegroundColorAttributeName:color]), for: UIControlState())
+        cancelButton.setAttributedTitle(NSAttributedString(string: title, attributes: convertToOptionalNSAttributedStringKeyDictionary([convertFromNSAttributedStringKey(NSAttributedString.Key.font):font,convertFromNSAttributedStringKey(NSAttributedString.Key.foregroundColor):color])), for: UIControl.State())
     }
     fileprivate func pinErrorAnimate() {
         for item in circleViews {
@@ -546,4 +546,15 @@ extension SAPinViewController: SAButtonViewDelegate {
             }
         }
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToOptionalNSAttributedStringKeyDictionary(_ input: [String: Any]?) -> [NSAttributedString.Key: Any]? {
+	guard let input = input else { return nil }
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (NSAttributedString.Key(rawValue: key), value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSAttributedStringKey(_ input: NSAttributedString.Key) -> String {
+	return input.rawValue
 }
