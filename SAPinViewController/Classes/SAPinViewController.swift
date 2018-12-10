@@ -9,6 +9,14 @@
 import UIKit
 import SnapKit
 
+public enum PinViewType {
+    
+    case enter
+    case set
+    case confirm
+    
+}
+
 /// SAPinViewControllerDelegate
 /// Any ViewController that would like to present `SAPinViewController` should implement
 /// all these protocol methods
@@ -21,6 +29,8 @@ public protocol SAPinViewControllerDelegate: class {
     /// Gets called if the enterd PIN returned `true` passing it to `isPinValid(pin: String) -> Bool`
     /// required and must be implemented
     func pinEntryWasSuccessful()
+    
+    func saPinViewController(_ saPinViewController: SAPinViewController, didSet newPin: String)
     
     /// Gets called if the enterd PIN returned `false` passing it to `isPinValid(pin: String) -> Bool`
     /// required and must be implemented
@@ -36,6 +46,12 @@ public protocol SAPinViewControllerDelegate: class {
 /// Set each one of its property for customisation
 /// N.B: UNLY use the Designate initialaiser
 open class SAPinViewController: UIViewController {
+    
+    open var isSetPasscode: Bool!
+    
+    fileprivate var currentPinViewType: PinViewType = .enter
+    
+    fileprivate var newPin = ""
     
     ///  Set this to customise the border colour around the dots
     /// This will set the dots fill colour as well
@@ -419,7 +435,7 @@ open class SAPinViewController: UIViewController {
         updateTitle()
     }
     fileprivate func updateTitle() {
-        titleLabel.text = titleText ?? "Enter Passcode"
+        titleLabel.text = titleText ?? "Enter PIN"
         titleLabel.snp.remakeConstraints { (make) in
             make.width.equalTo(dotContainerWidth)
             if subtitleLabel.text == "" {
@@ -534,15 +550,45 @@ extension SAPinViewController: SAButtonViewDelegate {
             tappedButtons.append(tag)
             setAttributedTitleForButtonWithTitle(SAPinConstant.DeleteString, font: cancelButtonFont, color: cancelButtonColor)
             if tappedButtons.count == 4 {
-                if delegate!.isPinValid("\(tappedButtons[0])\(tappedButtons[1])\(tappedButtons[2])\(tappedButtons[3])") {
-                    delegate?.pinEntryWasSuccessful()
-                } else {
-                    delegate?.pinWasIncorrect()
-                    pinErrorAnimate()
+                switch currentPinViewType {
+                case .enter:
+                    guard let delegate = delegate else {
+                        return
+                    }
+                    let isPinValid = delegate.isPinValid("\(tappedButtons[0])\(tappedButtons[1])\(tappedButtons[2])\(tappedButtons[3])")
+                    
+                    guard isPinValid else {
+                        pinErrorAnimate()
+                        tappedButtons = []
+                        setAttributedTitleForButtonWithTitle(SAPinConstant.CancelString, font: cancelButtonFont, color: cancelButtonColor)
+                        return
+                    }
+                    
+                    if isSetPasscode {
+                        currentPinViewType = .set
+                        titleText = "Set PIN"
+                        tappedButtons = []
+                        setAttributedTitleForButtonWithTitle(SAPinConstant.CancelString, font: cancelButtonFont, color: cancelButtonColor)
+                    } else {
+                        delegate.pinEntryWasSuccessful()
+                    }
+                case .set:
+                    newPin = "\(tappedButtons[0])\(tappedButtons[1])\(tappedButtons[2])\(tappedButtons[3])"
+                    currentPinViewType = .confirm
+                    titleText = "Repeat PIN"
                     tappedButtons = []
                     setAttributedTitleForButtonWithTitle(SAPinConstant.CancelString, font: cancelButtonFont, color: cancelButtonColor)
+                case .confirm:
+                    let repeatedPin = "\(tappedButtons[0])\(tappedButtons[1])\(tappedButtons[2])\(tappedButtons[3])"
+                    if newPin == repeatedPin {
+                        delegate?.saPinViewController(self, didSet: newPin)
+                    } else {
+                        subtitleText = "Passcode doesn't match"
+                        pinErrorAnimate()
+                        tappedButtons = []
+                        setAttributedTitleForButtonWithTitle(SAPinConstant.CancelString, font: cancelButtonFont, color: cancelButtonColor)
+                    }
                 }
-                
             }
         }
     }
