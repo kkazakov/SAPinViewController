@@ -24,17 +24,13 @@ public protocol SAPinViewControllerDelegate: class {
     
     /// Gets called upon tapping on `Cancel` button 
     /// required and must be implemented
-    func pinEntryWasCancelled()
+    func pinEntryWasCancelled(_ saPinViewController: SAPinViewController)
     
     /// Gets called if the enterd PIN returned `true` passing it to `isPinValid(pin: String) -> Bool`
     /// required and must be implemented
-    func pinEntryWasSuccessful()
+    func pinEntryWasSuccessful(_ saPinViewController: SAPinViewController)
     
     func saPinViewController(_ saPinViewController: SAPinViewController, didSet newPin: String)
-    
-    /// Gets called if the enterd PIN returned `false` passing it to `isPinValid(pin: String) -> Bool`
-    /// required and must be implemented
-    func pinWasIncorrect()
     
     /// Ask the implementer to see whether the PIN is valid or not
     /// required and must be implemented
@@ -54,12 +50,12 @@ public protocol SAPinViewControllerDelegate: class {
 
 public extension SAPinViewControllerDelegate {
     
+    func pinEntryWasCancelled(_ saPinViewController: SAPinViewController) {}
+
     func pinEntryWasSuccessful() {}
     
     func saPinViewController(_ saPinViewController: SAPinViewController, didSet newPin: String) {}
     
-    func pinWasIncorrect() {}
-
     func setPinViewTitle() -> String { return "" }
     
     func repeatPinViewTitle() -> String { return "" }
@@ -76,7 +72,7 @@ public extension SAPinViewControllerDelegate {
 /// N.B: UNLY use the Designate initialaiser
 open class SAPinViewController: UIViewController {
     
-    open var isSetPasscode: Bool!
+    open var isSetPasscode = false
     
     fileprivate var currentPinViewType: PinViewType = .enter
     
