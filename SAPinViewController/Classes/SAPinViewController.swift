@@ -52,8 +52,8 @@ public extension SAPinViewControllerDelegate {
     
     func pinEntryWasCancelled(_ saPinViewController: SAPinViewController) {}
 
-    func pinEntryWasSuccessful() {}
-    
+    func pinEntryWasSuccessful(_ saPinViewController: SAPinViewController) {}
+
     func saPinViewController(_ saPinViewController: SAPinViewController, didSet newPin: String) {}
     
     func setPinViewTitle() -> String { return "" }
@@ -531,7 +531,7 @@ open class SAPinViewController: UIViewController {
                 setAttributedTitleForButtonWithTitle(SAPinConstant.CancelString, font: cancelButtonFont, color: cancelButtonColor)
             }
         } else {
-            delegate?.pinEntryWasCancelled()
+            delegate?.pinEntryWasCancelled(self)
         }
     }
     fileprivate func isSmallScreen() -> Bool {
@@ -616,7 +616,7 @@ extension SAPinViewController: SAButtonViewDelegate {
                         titleText = delegate.setPinViewTitle()
                         configureNextPage()
                     } else {
-                        delegate.pinEntryWasSuccessful()
+                        delegate.pinEntryWasSuccessful(self)
                     }
                 case .set:
                     newPin = "\(tappedButtons[0])\(tappedButtons[1])\(tappedButtons[2])\(tappedButtons[3])"
